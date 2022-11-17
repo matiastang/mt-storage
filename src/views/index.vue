@@ -2,62 +2,70 @@
  * @Author: matiastang
  * @Date: 2022-03-31 15:28:39
  * @LastEditors: matiastang
- * @LastEditTime: 2022-11-15 15:42:19
+ * @LastEditTime: 2022-11-17 15:46:38
  * @FilePath: /mt-storage/src/views/index.vue
- * @Description: 框架测试
+ * @Description: 测试
 -->
 <template>
-    <div @click="changeObjectValue">{{ `test objectValue：${localObjectValue.random}` }}</div>
-    <div @click="changeStringValue">{{ `test stringValue：${localStringValue}` }}</div>
-    <div @click="changeBooleanValue">{{ `test booleanValue：${localBooleanValue}` }}</div>
-    <div @click="changeNumberValue">{{ `test numberValue：${localNumberValue}` }}</div>
-    <div @click="changeSymbolValue">{{ `test symbolValue：${localSymbolValue?.toString()}` }}</div>
-    <div @click="() => {
-        router.push({
-            path: '/local'
-        })
-    }">跳转</div>
-    <router-link to="/local">跳转2</router-link>
+    <div @click="changeValue">改变所有缓存值</div>
 </template>
 <script setup lang="ts">
-import { useRouter } from 'vue-router'
-import { localRef, localReactive } from '../vueStorage'
-
-const router = useRouter()
+import { WebStorageType, storageWrite, storageRead, storageRemove, storageRemoveAll } from '../storage'
 
 interface TestType {
-    random: number
+    value: number
 }
 
 const localKey = 'KEY'
-let localObjectValue = localReactive<TestType>(localKey + '_OBJECT')
 
-const changeObjectValue = () => {
-    localObjectValue.random = Math.random() * 100
-}
+storageWrite(localKey + '_OBJECT', {
+    value: Math.random() * 100
+})
+const localObjectValue = storageRead<TestType>(localKey + '_OBJECT')
+console.log(localObjectValue)
 
-let localStringValue = localRef<string>(localKey + '_STRING')
+storageWrite(localKey + '_STRING', Math.random() * 100 + '')
+const localStringValue = storageRead<string>(localKey + '_STRING')
+console.log(localStringValue, typeof localStringValue)
 
-const changeStringValue = () => {
-    localStringValue.value = `${Math.random() * 100}`
-}
+storageWrite(localKey + '_BOOLEAN', true)
+let localBooleanValue = storageRead<boolean>(localKey + '_BOOLEAN')
+console.log(localBooleanValue, typeof localBooleanValue)
 
-let localBooleanValue = localRef<boolean>(localKey + '_BOOLEAN')
+storageWrite(localKey + '_NUMBER', Math.random() * 100)
+const localNumberValue = storageRead<number>(localKey + '_NUMBER')
+console.log(localNumberValue, typeof localNumberValue)
 
-const changeBooleanValue = () => {
-    localBooleanValue.value = !localBooleanValue.value
-}
+storageWrite(localKey + '_NaN', NaN)
+const localNaNValue = storageRead<Number>(localKey + '_NaN')
+console.log(localNaNValue, Number.isNaN(localNaNValue), typeof localNaNValue)
 
-let localNumberValue = localRef<number>(localKey + '_NUMBER')
 
-const changeNumberValue = () => {
-    localNumberValue.value = Math.random() * 100
-}
 
-let localSymbolValue = localRef<symbol>(localKey + '_SYMBOL')
+// const testJson = localStorage.setItem('TEST', testValue.toString())
+// const test = JSON.parse(testJson)
 
-const changeSymbolValue = () => {
-    localSymbolValue.value = Symbol(Math.random() * 100)
+// typeof value === 'undefined'
+
+// .toString()
+// typeof value === 'bigint'
+// typeof value === 'function'
+// typeof value === 'symbol'
+// NaN
+
+// typeof value === 'boolean'
+// typeof value === 'number'
+// typeof value === 'object'
+// null
+
+const changeValue = () => {
+    storageWrite(localKey + '_OBJECT', {
+        value: Math.random() * 100
+    })
+    storageWrite(localKey + '_STRING', Math.random() * 100 + '')
+    localBooleanValue = !(localBooleanValue === true)
+    storageWrite(localKey + '_BOOLEAN', localBooleanValue)
+    storageWrite(localKey + '_NUMBER', Math.random() * 100)
 }
 </script>
 <style lang="scss" scoped></style>

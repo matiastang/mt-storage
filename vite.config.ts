@@ -2,7 +2,7 @@
  * @Author: matiastang
  * @Date: 2022-11-15 11:47:19
  * @LastEditors: matiastang
- * @LastEditTime: 2022-11-15 15:54:31
+ * @LastEditTime: 2022-11-17 14:31:31
  * @FilePath: /mt-storage/vite.config.ts
  * @Description: vite配置文件
  */
@@ -50,7 +50,7 @@ export default defineConfig({
     // 开发服务配置
     server: {
         host: '0.0.0.0',
-        port: 3006,
+        port: 3007,
         strictPort: true,
         fs: {
             strict: false,
