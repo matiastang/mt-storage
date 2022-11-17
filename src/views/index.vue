@@ -2,7 +2,7 @@
  * @Author: matiastang
  * @Date: 2022-03-31 15:28:39
  * @LastEditors: matiastang
- * @LastEditTime: 2022-11-17 15:46:38
+ * @LastEditTime: 2022-11-17 18:10:17
  * @FilePath: /mt-storage/src/views/index.vue
  * @Description: 测试
 -->
@@ -22,7 +22,7 @@ storageWrite(localKey + '_OBJECT', {
     value: Math.random() * 100
 })
 const localObjectValue = storageRead<TestType>(localKey + '_OBJECT')
-console.log(localObjectValue)
+console.log(typeof localObjectValue?.value)
 
 storageWrite(localKey + '_STRING', Math.random() * 100 + '')
 const localStringValue = storageRead<string>(localKey + '_STRING')

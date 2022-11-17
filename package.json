@@ -1,13 +1,13 @@
 {
   "name": "matias-storage",
-  "version": "1.0.0",
+  "version": "0.1.0",
   "description": "`web storage` 的二次封装",
   "main": "./dist/index.umd.js",
   "files": [
     "dist"
   ],
   "module": "./dist/index.es.js",
-  "types": "./dist/index.d.ts",
+  "types": "./dist/types/index.d.ts",
   "exports": {
     ".": {
       "import": "./dist/index.es.js",
@@ -23,9 +23,10 @@
   ],
   "scripts": {
     "dev": "vite",
-    "ts:build": "tsc --build src/throttle/tsconfig.json",
+    "ts:build": "tsc --build src/storage/tsconfig.json",
     "build": "vite --config vite.build.config.ts build --mode production",
-    "cp:type": "cp src/throttle/buildTypes/index.d.ts dist && cp src/throttle/buildTypes/throttle.d.ts dist && cp src/throttle/buildTypes/task.d.ts dist",
+    "mv:types": "mv src/storage/types dist/types",
+    "cp:type": "cp src/storage/buildTypes/index.d.ts dist && cp src/storage/buildTypes/throttle.d.ts dist && cp src/throttle/buildTypes/task.d.ts dist",
     "plugin:build": "pnpm run ts:build && pnpm run build && pnpm run cp:type",
     "push:npm:package": "gulp versionPatch && gulp npmPackagePush",
     "plugin:build:push:npm:package": "pnpm run plugin:build && pnpm run push:npm:package"
