@@ -2,7 +2,7 @@
  * @Author: matiastang
  * @Date: 2022-11-15 11:35:41
  * @LastEditors: matiastang
- * @LastEditTime: 2022-11-17 18:40:48
+ * @LastEditTime: 2022-11-17 19:23:51
  * @FilePath: /mt-storage/README.md
  * @Description: README
 -->
@@ -43,7 +43,10 @@ interface TestType {
 const obj: TestType = {
     value: 100
 }
+// 默认使用localStorage
 storageWrite('LOCL_OBJECT', obj)
+// 使用sessionStorage
+storageWrite('SESSION_OBJECT', obj, WebStorageType.SESSION)
 ```
 ### 读
 ```ts
