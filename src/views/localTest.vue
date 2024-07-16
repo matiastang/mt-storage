@@ -2,20 +2,40 @@
  * @Author: matiastang
  * @Date: 2022-11-15 15:34:13
  * @LastEditors: matiastang
- * @LastEditTime: 2022-11-15 15:49:46
+ * @LastEditTime: 2024-07-15 18:26:19
  * @FilePath: /mt-storage/src/views/localTest.vue
  * @Description: vue local storage 测试
 -->
 <template>
-    <div @click="changeObjectValue">{{ `更新objectValue：${localObjectValue.random}` }}</div>
-    <div @click="changTestValue">{{ `更新2objectValue：${localTestValue.random}` }}</div>
-    <div @click="changeStringValue">{{ `更新stringValue：${localStringValue}` }}</div>
-    <div @click="changeBooleanValue">{{ `更新booleanValue：${localBooleanValue}` }}</div>
-    <div @click="changeNumberValue">{{ `更新numberValue：${localNumberValue}` }}</div>
-    <div @click="changeSymbolValue">{{ `更新symbolValue：${localSymbolValue?.toString()}` }}</div>
+    <div class="page">
+        <div @click="changeObjectTestValue">{{ `TEST：${localObjectValue.random.value}` }}</div>
+        <div @click="changeObjectValue">{{ `更新objectValue：${localObjectValue.random}` }}</div>
+        <div @click="changTestValue">{{ `更新2objectValue：${localTestValue.random}` }}</div>
+        <div @click="changeStringValue">{{ `更新stringValue：${localStringValue}` }}</div>
+        <div @click="changeBooleanValue">{{ `更新booleanValue：${localBooleanValue}` }}</div>
+        <div @click="changeNumberValue">{{ `更新numberValue：${localNumberValue}` }}</div>
+        <div @click="changeSymbolValue">{{ `更新symbolValue：${localSymbolValue?.toString()}` }}</div>
+    </div>
 </template>
 <script setup lang="ts">
+import { Ref } from 'vue'
 import { localRef, localReactive } from '../vueStorage'
+
+const localKeyTest = 'KEY'
+
+let localStringTestValue = localRef<string>(localKeyTest + '_STRING_TEST')
+
+interface TestType {
+    random: Ref
+}
+
+let localObjectTestValue = localReactive<TestType>(localKeyTest + '_OBJECT_TEST', {
+    random: localStringTestValue
+})
+
+const changeObjectTestValue = () => {
+    localObjectTestValue.random.value = Math.random() * 100
+}
 
 interface TestType {
     random: number
@@ -58,4 +78,13 @@ const changeSymbolValue = () => {
     localSymbolValue.value = Symbol(Math.random() * 100)
 }
 </script>
-<style lang="scss" scoped></style>
+<style lang="less" scoped>
+.page {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100vw;
+    height: 100vh;
+    font-size: 16px;
+}
+</style>

@@ -2,16 +2,31 @@
  * @Author: matiastang
  * @Date: 2021-11-12 11:42:05
  * @LastEditors: matiastang
- * @LastEditTime: 2022-11-17 15:45:29
+ * @LastEditTime: 2024-07-16 11:30:01
  * @FilePath: /mt-storage/src/storage/localStorage.ts
  * @Description: localStorage简单封装
  */
 /**
- * 存储localStorage数据
+ * 
  * @param key 存储key
  * @param value 存储值
  */
-export const localStorageWrite = (key: string, value: object | string | boolean | number) => {
+
+/**
+ * 存储localStorage数据
+ * @param key 存储key
+ * @param value 存储值(object | string | boolean | number | null | undefined)，number不能为NaN，undefined同删除。
+ * @returns 
+ */
+export const localStorageWrite = (key: string, value: object | string | boolean | number | null | undefined) => {
+  if (typeof value === 'undefined') {
+    localStorage.removeItem(key)
+    return true
+  }
+  if (Number.isNaN(value)) {
+    console.warn(`mt-storage localStorage write ${key} value=${value} number is NaN`)
+    return false
+  }
   try {
     const saveValue = JSON.stringify(value)
     localStorage.setItem(key, saveValue)
@@ -27,13 +42,13 @@ export const localStorageWrite = (key: string, value: object | string | boolean 
  * @param key 存储key
  * @returns
  */
-export const localStorageRead = <T>(key: string): T | null => {
+export const localStorageRead = (key: string): any => {
   const value = localStorage.getItem(key)
   if (value === null) {
     return null
   }
   try {
-    return <T>JSON.parse(value)
+    return JSON.parse(value)
   } catch (err) {
     console.warn(`mt-storage localStorage red ${key}：`, err)
   }
