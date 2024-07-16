@@ -2,7 +2,7 @@
  * @Author: matiastang
  * @Date: 2022-03-31 15:28:39
  * @LastEditors: matiastang
- * @LastEditTime: 2024-07-16 11:21:19
+ * @LastEditTime: 2024-07-16 14:31:56
  * @FilePath: /mt-storage/src/views/index.vue
  * @Description: 测试
 -->
@@ -17,7 +17,7 @@ const localKey = 'KEY'
 // object
 const objectKey = localKey + '_OBJECT'
 storageWrite(objectKey, {
-    value: Math.random() * 100
+    value: Math.random() * 100,
 })
 const localObjectValue = storageRead(objectKey)
 console.log(localObjectValue, typeof localObjectValue, typeof localObjectValue?.value)
@@ -57,31 +57,9 @@ storageWrite(undefinedKey, null)
 const localUndefinedValue = storageRead(undefinedKey)
 console.log(localUndefinedValue, typeof localUndefinedValue)
 
-// bigint
-const bigintKey = localKey + '_BIGINT'
-storageWrite(bigintKey, 123456789012345678901234567890n)
-const localBigintValue = storageRead(bigintKey)
-console.log(localBigintValue, typeof localBigintValue)
-
-// const testJson = localStorage.setItem('TEST', testValue.toString())
-// const test = JSON.parse(testJson)
-
-// typeof value === 'undefined'
-
-// .toString()
-// typeof value === 'bigint'
-// typeof value === 'function'
-// typeof value === 'symbol'
-// NaN
-
-// typeof value === 'boolean'
-// typeof value === 'number'
-// typeof value === 'object'
-// null
-
 const changeValue = () => {
     storageWrite(objectKey, {
-        value: Math.random() * 100
+        value: Math.random() * 100,
     })
     storageWrite(stringKey, Math.random() * 100 + '')
     storageWrite(booleanKey, localBooleanValue)

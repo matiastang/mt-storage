@@ -2,7 +2,7 @@
  * @Author: matiastang
  * @Date: 2022-11-15 11:35:41
  * @LastEditors: matiastang
- * @LastEditTime: 2024-07-16 14:01:34
+ * @LastEditTime: 2024-07-16 14:40:12
  * @FilePath: /mt-storage/README.md
  * @Description: README
 -->
@@ -36,13 +36,11 @@ $ yarn add -D matias-storage
 $ npm install -D matias-storage
 ```
 
-### 引入
+### 使用
 
 ```ts
 import { WebStorageType, storageWrite, storageRead, storageRemove, storageRemoveAll } from 'matias-storage'
-```
-### 写
-```ts
+
 interface TestType {
     value: number
 }
@@ -50,31 +48,42 @@ interface TestType {
 const obj: TestType = {
     value: 100
 }
+
+const LOCL_OBJECT_KEY = 'LOCL_OBJECT'
+const SESSION_OBJECT_KEY = 'SESSION_OBJECT'
+// 存储
+
 // 默认使用localStorage
-storageWrite('LOCL_OBJECT', obj)
+storageWrite(LOCL_OBJECT_KEY, obj)
 // 使用sessionStorage
-storageWrite('SESSION_OBJECT', obj, WebStorageType.SESSION)
-```
-### 读
-```ts
-interface TestType {
-    value: number
-}
-const localObjectValue = storageRead<TestType>('LOCL_OBJECT')
+storageWrite(SESSION_OBJECT_KEY, obj, WebStorageType.SESSION)
+
+// 读取
+
+const localObjectValue = storageRead<TestType>(LOCL_OBJECT_KEY)
+// **注意**使用者需自己保证存储的类型和读取类型的一致性
 console.log(typeof localObjectValue?.value) // number
-```
-### 删除
-```ts
-storageRemove('LOCL_OBJECT')
-```
-### 清除
-```ts
+
+// 删除
+
+storageRemove(LOCL_OBJECT_KEY)
+storageWrite(LOCL_OBJECT_KEY, undefined)// 保存undefined，等同删除
+
+// 清除localStorage
 storageRemoveAll()
+// 清除sessionStorage
+storageRemoveAll(WebStorageType.SESSION)
 ```
+
 ## 版本
+
+### 0.2.0
+
+* 添加存储值类型为`null`、 `undefined`的支持。
+* 调整逻辑`number`时值不能为`NaN`，`undefined`等同删除。
 
 ### 0.1.0
 
 * 支持`object`、`string`、`boolean`、`number`类型存储。
 * 支持`localStorage`和`sessionStorage`存储。
-* 读取支持泛型指定类型。
+* 读取支持指定类型。

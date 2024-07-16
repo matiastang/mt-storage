@@ -2,7 +2,7 @@
  * @Author: matiastang
  * @Date: 2024-07-16 13:51:50
  * @LastEditors: matiastang
- * @LastEditTime: 2024-07-16 14:17:05
+ * @LastEditTime: 2024-07-16 14:26:15
  * @FilePath: /mt-storage/DEB_README.md
  * @Description: DEB_README
 -->
@@ -26,8 +26,9 @@
     "dev": "vite",
     "ts:build": "tsc --build src/storage/tsconfig.json",
     "build": "vite --config vite.build.config.ts build --mode production",
-    "cp:type": "cp src/storage/buildTypes/index.d.ts dist",
-    "plugin:build": "pnpm run ts:build && pnpm run build && pnpm run cp:type",
+    "cp:types": "cp -r src/storage/types dist/",
+    "cp:type": "cp src/storage/types/index.d.ts dist",
+    "plugin:build": "pnpm run ts:build && pnpm run build && pnpm run cp:types",
     "push:npm:package": "gulp versionPatch && gulp npmPackagePush",
     "updata:package": "npm publish --registry https://registry.npmjs.org",
     "plugin:build:push:npm:package": "pnpm run plugin:build && pnpm run push:npm:package"
