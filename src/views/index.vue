@@ -2,7 +2,7 @@
  * @Author: matiastang
  * @Date: 2022-03-31 15:28:39
  * @LastEditors: matiastang
- * @LastEditTime: 2024-07-16 14:31:56
+ * @LastEditTime: 2024-07-16 14:41:50
  * @FilePath: /mt-storage/src/views/index.vue
  * @Description: 测试
 -->
@@ -53,7 +53,7 @@ console.log(localNullValue, typeof localNullValue)
 
 // undefined
 const undefinedKey = localKey + '_UNDEFINED'
-storageWrite(undefinedKey, null)
+storageWrite(undefinedKey, undefined)
 const localUndefinedValue = storageRead(undefinedKey)
 console.log(localUndefinedValue, typeof localUndefinedValue)
 

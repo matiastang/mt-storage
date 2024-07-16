@@ -2,11 +2,11 @@
  * @Author: matiastang
  * @Date: 2024-07-16 13:51:50
  * @LastEditors: matiastang
- * @LastEditTime: 2024-07-16 14:26:15
+ * @LastEditTime: 2024-07-16 14:47:18
  * @FilePath: /mt-storage/DEB_README.md
  * @Description: DEB_README
 -->
-# mt-storage
+# matias-storage
 
 `web storage`的简单二次封装。
 
@@ -107,25 +107,3 @@ $ npm publish --registry https://registry.npmjs.org --otp=******
 * `eslint`校验
 * `@vue/eslint-config-prettier`、`eslint-plugin-prettier`、`@typescript-eslint/eslint-plugin`、`@typescript-eslint/parser`修复
 * `ts-node`、`tslib`、`@types/node`
-
-* `gulp`、`@types/gulp`、`shelljs`、`@types/shelljs`、`minimist`、`@types/minimist`、`gulp-bump`、`@types/gulp-bump`。`gulp`相关
-```sh
-$ pnpm add -D gulp@4
-$ pnpm add -D --ignore-scripts gulp@4
-```
-
-<!-- "@types/node": "^18.11.9",
-"@vitejs/plugin-vue": "^3.2.0",
-"less": "^4.2.0",
-"less-loader": "^12.2.0",
-"path": "^0.12.7",
-"rollup": "^3.3.0",
-"rollup-plugin-minification": "^0.2.0",
-"ts-node": "^10.9.1",
-"tslib": "^2.4.1",
-"typescript": "^4.8.4",
-"vite": "^3.2.3",
-"vite-plugin-dts": "^1.7.1",
-"vue": "^3.2.45",
-"vue-router": "^4.1.6",
-"vue-tsc": "^1.0.9" -->

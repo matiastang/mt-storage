@@ -2,11 +2,11 @@
  * @Author: matiastang
  * @Date: 2022-11-15 11:35:41
  * @LastEditors: matiastang
- * @LastEditTime: 2024-07-16 14:40:12
+ * @LastEditTime: 2024-07-16 14:45:59
  * @FilePath: /mt-storage/README.md
  * @Description: README
 -->
-# mt-storage
+# matias-storage
 
 `web storage`的简单二次封装。
 
