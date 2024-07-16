@@ -2,7 +2,7 @@
  * @Author: matiastang
  * @Date: 2022-11-15 11:47:19
  * @LastEditors: matiastang
- * @LastEditTime: 2022-11-17 14:31:31
+ * @LastEditTime: 2024-07-16 14:11:29
  * @FilePath: /mt-storage/vite.config.ts
  * @Description: vite配置文件
  */
@@ -12,23 +12,23 @@ import path from 'path'
 import { defineConfig } from 'vite'
 // 解析.vue文件
 import vue from '@vitejs/plugin-vue'
-// 解析.jsx语法
-import vueJsx from '@vitejs/plugin-vue-jsx'
+// 开启GZIP压缩
+import compressPlugin from 'vite-plugin-compression'
 
 export default defineConfig({
     // 共享配置
     plugins: [
         vue(),
-        vueJsx(),
+        compressPlugin({
+            ext: '.gz', //gz br
+            algorithm: 'gzip', //brotliCompress gzip
+            deleteOriginFile: false,
+        }),
     ],
     resolve: {
         // 别名
         alias: [
-            { find: 'root', replacement: path.resolve(__dirname, './') },
             { find: '@', replacement: path.resolve(__dirname, './src') },
-            { find: 'static', replacement: path.resolve(__dirname, './static') },
-            { find: 'store', replacement: path.resolve(__dirname, './src/store') },
-            { find: 'utils', replacement: path.resolve(__dirname, './src/common/utils') },
         ],
     },
     css: {

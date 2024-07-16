@@ -2,32 +2,39 @@
  * @Author: matiastang
  * @Date: 2022-11-15 11:35:41
  * @LastEditors: matiastang
- * @LastEditTime: 2022-11-17 19:23:51
+ * @LastEditTime: 2024-07-16 14:01:34
  * @FilePath: /mt-storage/README.md
  * @Description: README
 -->
 # mt-storage
 
-`web storage` 的二次封装、提供`TS`类型支持
+`web storage`的简单二次封装。
 
 ## 说明
 
-`matias-storage`支持保存`object`、`string`、`boolean`、`number`类型的数据。其他类型的数据可以包装在`object`中使用，其实这个库主要也是使用`stringify`对实现`object`的支持。同时通过泛型支持在读取的时候指定类型。以前都是每个项目处理，感觉可以简单封装一下。
+* 存储值支持对象类型`object`、`string`、 `boolean`、 `number`、 `null`、 `undefined`，`number`时值不能为`NaN`，`undefined`等同删除。
+* 读取时支持传递类型，但只是为了方便在`TS`中使用。不会做任何类型转换，使用则需要自己保证存取类型的一致性。
 
-目前支持持久化目的地只支持`localStorage`和`sessionStorage`，后面考虑扩展其他。
+目前支持`localStorage`和`sessionStorage`两种存储。
 
-**注意**我平常使用`object`比较简单，如果数据比较大，可能有性能问题，后续考虑支持`DB`。
+**注意**如果数据量比较大，可能有性能问题，可以考虑`DB`存储。
 
 ## 使用
 
 ### 安装
 
-* `pnpm`导入
-> $ pnpm add -D matias-storage
-* `yarn`导入
-> $ yarn add -D matias-storage
-* `npm`导入
-> $ npm install -D matias-storage
+* `pnpm`
+```sh
+$ pnpm add -D matias-storage
+```
+* `yarn`
+```sh
+$ yarn add -D matias-storage
+```
+* `npm`
+```sh
+$ npm install -D matias-storage
+```
 
 ### 引入
 

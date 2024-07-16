@@ -2,7 +2,7 @@
  * @Author: matiastang
  * @Date: 2021-12-30 15:37:18
  * @LastEditors: matiastang
- * @LastEditTime: 2022-11-17 15:51:50
+ * @LastEditTime: 2024-07-16 13:46:20
  * @FilePath: /mt-storage/vite.build.config.ts
  * @Description: npm 打包上传配置
  */
@@ -13,7 +13,6 @@ import path from 'path'
 // vite
 import { defineConfig } from 'vite'
 // 代码压缩
-// import { terser } from 'rollup-plugin-terser'
 import { terser } from 'rollup-plugin-minification'
 
 export default defineConfig({
