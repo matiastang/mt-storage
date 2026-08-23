@@ -3,7 +3,7 @@
  * @Date: 2021-12-30 15:37:18
  * @LastEditors: matiastang
  * @LastEditTime: 2024-07-16 13:46:20
- * @FilePath: /mt-storage/vite.build.config.ts
+ * @FilePath: /web-storage/vite.build.config.ts
  * @Description: npm 打包上传配置
  */
 // vite配置文件vite.config.js
@@ -25,8 +25,10 @@ export default defineConfig({
         lib: {
             entry: path.resolve(__dirname, './src/storage/index.ts'),
             name: 'matiasStorage',
-            formats: ['es', 'cjs', 'umd', 'iife'],
-            fileName: (format) => `index.${format}.js`,
+            // package.json 为 type:module：CJS 产物必须用 .cjs 扩展名，
+            // 否则 Node 将 .js 的 UMD 按 ESM 解析，require 得到空对象
+            formats: ['es', 'umd', 'iife'],
+            fileName: (format) => (format === 'umd' ? 'index.umd.cjs' : `index.${format}.js`),
         },
         sourcemap: true, // 构建后是否生成 source map 文件。
         // 自定义底层的 Rollup 打包配置。这与从 Rollup 配置文件导出的选项相同，并将与 Vite 的内部 Rollup 选项合并。查看 Rollup 选项文档 获取更多细节。

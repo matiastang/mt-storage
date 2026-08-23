@@ -3,7 +3,7 @@
  * @Date: 2022-11-15 11:47:19
  * @LastEditors: matiastang
  * @LastEditTime: 2024-07-16 14:11:29
- * @FilePath: /mt-storage/vite.config.ts
+ * @FilePath: /web-storage/vite.config.ts
  * @Description: vite配置文件
  */
 // node路径

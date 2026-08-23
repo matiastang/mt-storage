@@ -3,7 +3,7 @@
  * @Date: 2022-11-17 10:56:15
  * @LastEditors: matiastang
  * @LastEditTime: 2022-11-17 10:58:14
- * @FilePath: /mt-storage/src/storage/enum.ts
+ * @FilePath: /web-storage/src/storage/enum.ts
  * @Description: 枚举
  */
 /**

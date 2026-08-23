@@ -3,7 +3,7 @@
  * @Date: 2021-12-28 19:31:46
  * @LastEditors: matiastang
  * @LastEditTime: 2024-07-16 17:32:42
- * @FilePath: /mt-storage/src/router/index.ts
+ * @FilePath: /web-storage/src/router/index.ts
  * @Description: 路由
  */
 import { createRouter, createWebHashHistory, RouteRecordRaw } from 'vue-router'

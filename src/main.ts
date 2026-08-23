@@ -4,7 +4,7 @@
  * @LastEditTime: 2022-11-15 12:05:23
  * @LastEditors: matiastang
  * @Description: In User Settings Edit
- * @FilePath: /mt-storage/src/main.ts
+ * @FilePath: /web-storage/src/main.ts
  */
 import { createApp } from 'vue'
 import App from '@/App.vue'

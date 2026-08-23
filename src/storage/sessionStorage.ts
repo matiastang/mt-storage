@@ -30,7 +30,7 @@ export const sessionStorageWrite = (
         return true
     } catch (err) {
         console.warn(
-            `mt-storage sessionStorage write ${keyString} value=${String(value)}:`,
+            `matias-storage sessionStorage write ${keyString} value=${String(value)}:`,
             err instanceof StorageSerializeError ? err.message : err
         )
         return false
@@ -51,7 +51,7 @@ export const sessionStorageRead = <T = any>(key: string | StorageKey<unknown>): 
         return <T>deserialize(value)
     } catch (err) {
         console.warn(
-            `mt-storage sessionStorage read ${resolveKeyString(key)}:`,
+            `matias-storage sessionStorage read ${resolveKeyString(key)}:`,
             err instanceof StorageSerializeError ? err.message : err
         )
     }

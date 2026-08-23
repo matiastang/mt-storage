@@ -30,7 +30,7 @@ export const localStorageWrite = (
         return true
     } catch (err) {
         console.warn(
-            `mt-storage localStorage write ${keyString} value=${String(value)}:`,
+            `matias-storage localStorage write ${keyString} value=${String(value)}:`,
             err instanceof StorageSerializeError ? err.message : err
         )
         return false
@@ -51,7 +51,7 @@ export const localStorageRead = <T = any>(key: string | StorageKey<unknown>): T 
         return <T>deserialize(value)
     } catch (err) {
         console.warn(
-            `mt-storage localStorage read ${resolveKeyString(key)}:`,
+            `matias-storage localStorage read ${resolveKeyString(key)}:`,
             err instanceof StorageSerializeError ? err.message : err
         )
     }

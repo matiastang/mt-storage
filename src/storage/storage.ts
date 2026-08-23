@@ -99,7 +99,7 @@ export function storageRead(
     }
     if (guard && !guard(value)) {
         console.warn(
-            `mt-storage storage read ${keyString}: value failed the type guard, return null instead`
+            `matias-storage storage read ${keyString}: value failed the type guard, return null instead`
         )
         return null
     }
