@@ -16,7 +16,7 @@ export const sessionStorageWrite = (
     value: object | string | boolean | number | null | undefined
 ) => {
     if (typeof value === 'undefined') {
-        localStorage.removeItem(key)
+        sessionStorage.removeItem(key)
         return true
     }
     if (Number.isNaN(value)) {

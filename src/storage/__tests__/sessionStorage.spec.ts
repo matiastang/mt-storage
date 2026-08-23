@@ -1,0 +1,76 @@
+/*
+ * @Author: matiastang
+ * @Date: 2026-08-23 20:20:00
+ * @LastEditors: matiastang
+ * @LastEditTime: 2026-08-23 20:20:00
+ * @FilePath: /web-storage/src/storage/__tests__/sessionStorage.spec.ts
+ * @Description: sessionStorage 封装单元测试（含 undefined 删除语义的 bug 回归）
+ */
+import { describe, expect, it, vi } from 'vitest'
+import { sessionStorageWrite, sessionStorageRead, sessionStorageRemove, sessionStorageRemoveAll } from '../sessionStorage'
+
+describe('sessionStorageWrite', () => {
+    it('写入对象并可读取', () => {
+        expect(sessionStorageWrite('OBJ', { value: 100 })).toBe(true)
+        expect(sessionStorageRead('OBJ')).toEqual({ value: 100 })
+    })
+
+    it('写入 undefined 等同删除 sessionStorage 中的 key，且不影响 localStorage 同名 key', () => {
+        sessionStorage.setItem('SHARED', '"session"')
+        localStorage.setItem('SHARED', '"local"')
+
+        expect(sessionStorageWrite('SHARED', undefined)).toBe(true)
+
+        expect(sessionStorage.getItem('SHARED')).toBeNull()
+        expect(localStorage.getItem('SHARED')).toBe('"local"')
+        expect(sessionStorageRead('SHARED')).toBeNull()
+    })
+
+    it('写入 NaN 返回 false 且不写入', () => {
+        const warn = vi.spyOn(console, 'warn').mockImplementation(() => {})
+        expect(sessionStorageWrite('NAN', NaN)).toBe(false)
+        expect(sessionStorage.getItem('NAN')).toBeNull()
+        expect(warn).toHaveBeenCalled()
+        warn.mockRestore()
+    })
+
+    it('序列化失败时返回 false 并告警', () => {
+        const warn = vi.spyOn(console, 'warn').mockImplementation(() => {})
+        const circular: Record<string, unknown> = {}
+        circular.self = circular
+        expect(sessionStorageWrite('CIRCULAR', circular)).toBe(false)
+        warn.mockRestore()
+    })
+})
+
+describe('sessionStorageRead', () => {
+    it('不存在返回 null', () => {
+        expect(sessionStorageRead('NOT_EXIST')).toBeNull()
+    })
+
+    it('脏数据（非法 JSON）返回 null 并告警', () => {
+        sessionStorage.setItem('DIRTY', '{invalid json')
+        const warn = vi.spyOn(console, 'warn').mockImplementation(() => {})
+        expect(sessionStorageRead('DIRTY')).toBeNull()
+        expect(warn).toHaveBeenCalled()
+        warn.mockRestore()
+    })
+})
+
+describe('sessionStorageRemove / removeAll', () => {
+    it('删除指定 key', () => {
+        sessionStorageWrite('A', 1)
+        sessionStorageWrite('B', 2)
+        sessionStorageRemove('A')
+        expect(sessionStorageRead('A')).toBeNull()
+        expect(sessionStorageRead('B')).toBe(2)
+    })
+
+    it('清空所有 sessionStorage', () => {
+        sessionStorageWrite('A', 1)
+        localStorage.setItem('KEEP', '"keep"')
+        sessionStorageRemoveAll()
+        expect(sessionStorage.length).toBe(0)
+        expect(localStorage.getItem('KEEP')).toBe('"keep"')
+    })
+})
