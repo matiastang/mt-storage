@@ -22,7 +22,7 @@
     "prepare": "husky",
     "ts:build": "tsc --build src/storage/tsconfig.json",
     "build": "vite --config vite.build.config.ts build --mode production",
-    "cp:types": "cp -r src/storage/types dist/",
+    "cp:types": "node -e \"require('fs').cpSync('src/storage/types','dist/types',{recursive:true})\"",
     "plugin:build": "pnpm run ts:build && pnpm run build && pnpm run cp:types",
     "publish:npm": "pnpm run plugin:build && npm publish --registry https://registry.npmjs.org"
   },
