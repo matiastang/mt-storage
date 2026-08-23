@@ -2,40 +2,37 @@
  * @Author: matiastang
  * @Date: 2021-11-12 11:42:05
  * @LastEditors: matiastang
- * @LastEditTime: 2024-07-16 14:27:09
- * @FilePath: /mt-storage/src/storage/localStorage.ts
+ * @LastEditTime: 2026-08-23 20:50:00
+ * @FilePath: /web-storage/src/storage/localStorage.ts
  * @Description: localStorage简单封装
  */
-/**
- *
- * @param key 存储key
- * @param value 存储值
- */
+import { StorageSerializeError } from './errors'
+import { resolveKeyString, StorageKey } from './key'
+import { deserialize, serialize } from './serializer'
 
 /**
  * 存储localStorage数据
  * @param key 存储key
- * @param value 存储值(object | string | boolean | number | null | undefined)，number不能为NaN，undefined同删除。
- * @returns
+ * @param value 存储值(object | string | boolean | number | bigint | null | undefined)，undefined同删除。
+ * @returns 成功返回true；undefined删除返回true；不支持类型（循环引用/顶层函数等）或写入失败返回false并告警。
  */
 export const localStorageWrite = (
-    key: string,
-    value: object | string | boolean | number | null | undefined
+    key: string | StorageKey<unknown>,
+    value: object | string | boolean | number | bigint | null | undefined
 ) => {
+    const keyString = resolveKeyString(key)
     if (typeof value === 'undefined') {
-        localStorage.removeItem(key)
+        localStorage.removeItem(keyString)
         return true
-    }
-    if (Number.isNaN(value)) {
-        console.warn(`mt-storage localStorage write ${key} value=${value} number is NaN`)
-        return false
     }
     try {
-        const saveValue = JSON.stringify(value)
-        localStorage.setItem(key, saveValue)
+        localStorage.setItem(keyString, serialize(value))
         return true
     } catch (err) {
-        console.warn(`mt-storage localStorage write ${key} value=${value}`, err)
+        console.warn(
+            `matias-storage localStorage write ${keyString} value=${String(value)}:`,
+            err instanceof StorageSerializeError ? err.message : err
+        )
         return false
     }
 }
@@ -43,17 +40,20 @@ export const localStorageWrite = (
 /**
  * 读取localStorage数据
  * @param key 存储key
- * @returns
+ * @returns 反序列化后的值；key不存在、存储null或解析失败返回null（后两者告警仅解析失败触发）
  */
-export const localStorageRead = <T = any>(key: string): T | null => {
-    const value = localStorage.getItem(key)
+export const localStorageRead = <T = any>(key: string | StorageKey<unknown>): T | null => {
+    const value = localStorage.getItem(resolveKeyString(key))
     if (value === null) {
         return null
     }
     try {
-        return <T>JSON.parse(value)
+        return <T>deserialize(value)
     } catch (err) {
-        console.warn(`mt-storage localStorage red ${key}：`, err)
+        console.warn(
+            `matias-storage localStorage read ${resolveKeyString(key)}:`,
+            err instanceof StorageSerializeError ? err.message : err
+        )
     }
     return null
 }
@@ -61,15 +61,13 @@ export const localStorageRead = <T = any>(key: string): T | null => {
 /**
  * 清除localStorage数据
  * @param key 存储key
- * @returns 返回类型
  */
-export const localStorageRemove = (key: string) => {
-    localStorage.removeItem(key)
+export const localStorageRemove = (key: string | StorageKey<unknown>) => {
+    localStorage.removeItem(resolveKeyString(key))
 }
 
 /**
  * 清除所有LocalStorage数据
- * @returns 返回类型
  */
 export const localStorageRemoveAll = () => {
     localStorage.clear()

@@ -2,33 +2,37 @@
  * @Author: matiastang
  * @Date: 2022-11-17 10:45:12
  * @LastEditors: matiastang
- * @LastEditTime: 2024-07-16 14:27:49
- * @FilePath: /mt-storage/src/storage/sessionStorage.ts
+ * @LastEditTime: 2026-08-23 20:50:00
+ * @FilePath: /web-storage/src/storage/sessionStorage.ts
  * @Description: sessionStorage简单封装
  */
+import { StorageSerializeError } from './errors'
+import { resolveKeyString, StorageKey } from './key'
+import { deserialize, serialize } from './serializer'
+
 /**
  * 存储sessionStorage数据
  * @param key 存储key
- * @param value 存储值(object | string | boolean | number | null | undefined)，number不能为NaN，undefined同删除。
+ * @param value 存储值(object | string | boolean | number | bigint | null | undefined)，undefined同删除。
+ * @returns 成功返回true；undefined删除返回true；不支持类型（循环引用/顶层函数等）或写入失败返回false并告警。
  */
 export const sessionStorageWrite = (
-    key: string,
-    value: object | string | boolean | number | null | undefined
+    key: string | StorageKey<unknown>,
+    value: object | string | boolean | number | bigint | null | undefined
 ) => {
+    const keyString = resolveKeyString(key)
     if (typeof value === 'undefined') {
-        localStorage.removeItem(key)
+        sessionStorage.removeItem(keyString)
         return true
-    }
-    if (Number.isNaN(value)) {
-        console.warn(`mt-storage sessionStorage write ${key} value=${value} number is NaN`)
-        return false
     }
     try {
-        const saveValue = JSON.stringify(value)
-        sessionStorage.setItem(key, saveValue)
+        sessionStorage.setItem(keyString, serialize(value))
         return true
     } catch (err) {
-        console.warn(`mt-storage sessionStorage write ${key} value=${value}`, err)
+        console.warn(
+            `matias-storage sessionStorage write ${keyString} value=${String(value)}:`,
+            err instanceof StorageSerializeError ? err.message : err
+        )
         return false
     }
 }
@@ -36,17 +40,20 @@ export const sessionStorageWrite = (
 /**
  * 读取sessionStorage数据
  * @param key 存储key
- * @returns
+ * @returns 反序列化后的值；key不存在、存储null或解析失败返回null（解析失败会告警）
  */
-export const sessionStorageRead = <T = any>(key: string): T | null => {
-    const value = sessionStorage.getItem(key)
+export const sessionStorageRead = <T = any>(key: string | StorageKey<unknown>): T | null => {
+    const value = sessionStorage.getItem(resolveKeyString(key))
     if (value === null) {
         return null
     }
     try {
-        return <T>JSON.parse(value)
+        return <T>deserialize(value)
     } catch (err) {
-        console.warn(`mt-storage sessionStorage red ${key}：`, err)
+        console.warn(
+            `matias-storage sessionStorage read ${resolveKeyString(key)}:`,
+            err instanceof StorageSerializeError ? err.message : err
+        )
     }
     return null
 }
@@ -54,15 +61,13 @@ export const sessionStorageRead = <T = any>(key: string): T | null => {
 /**
  * 清除sessionStorage数据
  * @param key 存储key
- * @returns 返回类型
  */
-export const sessionStorageRemove = (key: string) => {
-    sessionStorage.removeItem(key)
+export const sessionStorageRemove = (key: string | StorageKey<unknown>) => {
+    sessionStorage.removeItem(resolveKeyString(key))
 }
 
 /**
  * 清除所有sessionStorage数据
- * @returns 返回类型
  */
 export const sessionStorageRemoveAll = () => {
     sessionStorage.clear()
