@@ -26,12 +26,9 @@ describe('sessionStorageWrite', () => {
         expect(sessionStorageRead('SHARED')).toBeNull()
     })
 
-    it('写入 NaN 返回 false 且不写入', () => {
-        const warn = vi.spyOn(console, 'warn').mockImplementation(() => {})
-        expect(sessionStorageWrite('NAN', NaN)).toBe(false)
-        expect(sessionStorage.getItem('NAN')).toBeNull()
-        expect(warn).toHaveBeenCalled()
-        warn.mockRestore()
+    it('写入 NaN 可存取（v0.3.0 起支持）', () => {
+        expect(sessionStorageWrite('NAN', NaN)).toBe(true)
+        expect(Number.isNaN(sessionStorageRead<number>('NAN'))).toBe(true)
     })
 
     it('序列化失败时返回 false 并告警', () => {
