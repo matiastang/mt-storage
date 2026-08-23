@@ -1,89 +1,120 @@
-<!--
- * @Author: matiastang
- * @Date: 2022-11-15 11:35:41
- * @LastEditors: matiastang
- * @LastEditTime: 2024-07-16 14:45:59
- * @FilePath: /mt-storage/README.md
- * @Description: README
--->
 # matias-storage
 
-`web storage`的简单二次封装。
+[中文文档](./README.zh-CN.md)
 
-## 说明
+A lightweight, zero-dependency wrapper for Web Storage with automatic JSON serialization/deserialization, lossless built-in reference-type round-trips, TypeScript type inference, and optional runtime validation.
 
-* 存储值支持对象类型`object`、`string`、 `boolean`、 `number`、 `null`、 `undefined`，`number`时值不能为`NaN`，`undefined`等同删除。
-* 读取时支持传递类型，但只是为了方便在`TS`中使用。不会做任何类型转换，使用则需要自己保证存取类型的一致性。
+## Features
 
-目前支持`localStorage`和`sessionStorage`两种存储。
+- **Zero runtime dependencies** — tiny footprint, works in any framework (or none).
+- **Automatic JSON serialization** — store objects/arrays/primitives directly; no manual `JSON.stringify`.
+- **Lossless reference types** (since 0.3.0) — `Date`, `Map`, `Set`, `RegExp`, `BigInt`, `NaN`, `±Infinity` and nested `undefined` survive a write/read cycle intact (`instanceof` preserved).
+- **Type-safe keys** (since 0.3.0) — `defineStorageKey<T>()` lets TypeScript infer stored types automatically on read.
+- **Runtime validation** (since 0.3.0) — pass an optional type guard to `storageRead`; failed validation warns and returns `null`.
+- **Backward compatible** — data written by 0.2.x is read as-is; plain values are still stored as raw JSON.
 
-**注意**如果数据量比较大，可能有性能问题，可以考虑`DB`存储。
+## Installation
 
-## 使用
-
-### 安装
-
-* `pnpm`
 ```sh
-$ pnpm add -D matias-storage
-```
-* `yarn`
-```sh
-$ yarn add -D matias-storage
-```
-* `npm`
-```sh
-$ npm install -D matias-storage
+$ pnpm add matias-storage
+# or
+$ yarn add matias-storage
+# or
+$ npm install matias-storage
 ```
 
-### 使用
+## Usage
+
+### Basics (string keys, works like 0.2.x)
 
 ```ts
-import { WebStorageType, storageWrite, storageRead, storageRemove, storageRemoveAll } from 'matias-storage'
+import { storageWrite, storageRead, storageRemove, storageRemoveAll, WebStorageType } from 'matias-storage'
 
-interface TestType {
-    value: number
-}
+storageWrite('MY_OBJECT', { value: 100 })                     // localStorage by default
+storageWrite('MY_OBJECT', { value: 100 }, WebStorageType.SESSION) // sessionStorage
 
-const obj: TestType = {
-    value: 100
-}
+const value = storageRead<{ value: number }>('MY_OBJECT')     // { value: number } | null
 
-const LOCL_OBJECT_KEY = 'LOCL_OBJECT'
-const SESSION_OBJECT_KEY = 'SESSION_OBJECT'
-// 存储
-
-// 默认使用localStorage
-storageWrite(LOCL_OBJECT_KEY, obj)
-// 使用sessionStorage
-storageWrite(SESSION_OBJECT_KEY, obj, WebStorageType.SESSION)
-
-// 读取
-
-const localObjectValue = storageRead<TestType>(LOCL_OBJECT_KEY)
-// **注意**使用者需自己保证存储的类型和读取类型的一致性
-console.log(typeof localObjectValue?.value) // number
-
-// 删除
-
-storageRemove(LOCL_OBJECT_KEY)
-storageWrite(LOCL_OBJECT_KEY, undefined)// 保存undefined，等同删除
-
-// 清除localStorage
-storageRemoveAll()
-// 清除sessionStorage
-storageRemoveAll(WebStorageType.SESSION)
+storageRemove('MY_OBJECT')
+storageWrite('MY_OBJECT', undefined)                          // storing undefined === delete
+storageRemoveAll()                                            // clear localStorage
+storageRemoveAll(WebStorageType.SESSION)                      // clear sessionStorage
 ```
 
-## 版本
+### Typed keys — automatic type inference (0.3.0)
 
-### 0.2.0
+```ts
+import { defineStorageKey, storageWrite, storageRead, WebStorageType } from 'matias-storage'
 
-* 添加存储值类型为`null`、 `undefined`的支持。
-* 调整逻辑`number`时值不能为`NaN`，`undefined`等同删除。
+interface User { name: string; age: number }
 
-### 0.1.0
+const userKey = defineStorageKey<User>('USER')
+const sessionKey = defineStorageKey<User>('USER', WebStorageType.SESSION)
 
-* 支持`object`、`string`、`boolean`、`number`类型存储。
-* 支持`localStorage`和`sessionStorage`存储。
-* 读取支持指定类型。
+storageWrite(userKey, { name: 'matias', age: 18 })
+const user = storageRead(userKey)   // type is User | null — no generic needed
+```
+
+### Reference types — no type parameters needed (0.3.0)
+
+```ts
+storageWrite('DATE', new Date())
+storageRead('DATE')                 // Date instance
+
+storageWrite('MAP', new Map([['a', 1]]))
+storageRead('MAP')                  // Map instance with all entries
+
+storageWrite('NESTED', {
+  date: new Date(),
+  map: new Map([['set', new Set([1n, 2n])]]),
+  regexp: /ab+c/gi,
+  maybe: undefined,                 // preserved on read
+})
+```
+
+Note: `Array` round-trips natively (it always did). Class instances are serialized like `JSON.stringify` does (own enumerable properties, `toJSON` respected) — prototypes are not restored.
+
+### Runtime validation on read (0.3.0)
+
+```ts
+import { storageRead } from 'matias-storage'
+
+const isUser = (v: unknown): v is User =>
+  !!v && typeof v === 'object' && typeof (v as User).name === 'string'
+
+const ok = storageRead('USER', WebStorageType.LOCAL, isUser) // User if valid
+storageWrite('USER', { name: 123 } as unknown as User)       // corrupt it
+const bad = storageRead('USER', WebStorageType.LOCAL, isUser) // null + console.warn
+// works with typed keys too:
+storageRead(userKey, isUser)
+```
+
+zod users can wrap a schema: `(v) => schema.safeParse(v).success` as a guard — no dependency is imposed by the library.
+
+## Supported values
+
+| Type | Stored as | Restored as |
+|---|---|---|
+| `object` / `array` | raw JSON | plain object / array |
+| `string` / `boolean` / `number` | raw JSON | same primitive |
+| `null` | raw JSON | `null` |
+| `undefined` (top level) | — (delete) | — |
+| `Date` / `Map` / `Set` / `RegExp` / `BigInt` | type-tagged JSON | original type |
+| `NaN` / `Infinity` / `-Infinity` | type-tagged JSON | original value |
+| nested `undefined` | type-tagged JSON | `undefined` |
+| circular references, top-level `function`/`symbol` | rejected | `false` + `console.warn` |
+
+`storageRead` returns `null` when the key does not exist, the stored value is `null`, parsing fails, or a guard rejects the value.
+
+## Reserved fields
+
+Values containing both `__matias_tag__` and `__matias_value__` properties with a known tag are treated as internal type tags and revived. Avoid these two property names in your own data; unknown tags are left untouched.
+
+## Notes
+
+- For large datasets consider IndexedDB — Web Storage is synchronous and size-limited (~5MB).
+- Version history: see [CHANGELOG.md](./CHANGELOG.md).
+
+## License
+
+MIT
