@@ -21,7 +21,8 @@ const VALUE_KEY = '__matias_value__'
 /**
  * 支持的标签集合；NaN/Infinity/-Infinity/undefined 无载荷
  */
-type TagName = 'Date' | 'Map' | 'Set' | 'RegExp' | 'BigInt' | 'NaN' | 'Infinity' | '-Infinity' | 'undefined'
+type TagName =
+    'Date' | 'Map' | 'Set' | 'RegExp' | 'BigInt' | 'NaN' | 'Infinity' | '-Infinity' | 'undefined'
 
 const VALUELESS_TAGS = new Set<string>(['NaN', 'Infinity', '-Infinity', 'undefined'])
 
@@ -105,11 +106,16 @@ const encode = (value: unknown, ancestors: Set<object>): unknown => {
         )
     }
     if (value instanceof Set) {
-        return tagWithValue('Set', Array.from(value.values(), (v) => encode(v, ancestors)))
+        return tagWithValue(
+            'Set',
+            Array.from(value.values(), (v) => encode(v, ancestors))
+        )
     }
     if (Array.isArray(value)) {
         // 数组元素中的 function/symbol 按 JSON 语义落为 null
-        return value.map((item) => (typeof item === 'function' || typeof item === 'symbol' ? null : encode(item, ancestors)))
+        return value.map((item) =>
+            typeof item === 'function' || typeof item === 'symbol' ? null : encode(item, ancestors)
+        )
     }
     // 普通对象 / 类实例：保持 JSON.stringify 语义（toJSON、自有可枚举字符串键）
     const objectValue = value as Record<string, unknown>
@@ -178,14 +184,12 @@ const decode = (value: unknown): unknown => {
     if (tag === 'BigInt') {
         try {
             return BigInt(payload as string)
-        } catch (err) {
+        } catch {
             throw new StorageSerializeError(`invalid BigInt payload: ${String(payload)}`)
         }
     }
     if (tag === 'Map') {
-        return new Map(
-            (payload as [unknown, unknown][]).map(([k, v]) => [decode(k), decode(v)])
-        )
+        return new Map((payload as [unknown, unknown][]).map(([k, v]) => [decode(k), decode(v)]))
     }
     if (tag === 'Set') {
         return new Set((payload as unknown[]).map(decode))

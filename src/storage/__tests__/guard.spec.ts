@@ -21,7 +21,9 @@ const isTestType = (v: unknown): v is TestType =>
 describe('storageRead guard 校验（字符串 key）', () => {
     it('校验通过返回原值', () => {
         storageWrite('G_OK', { value: 100 })
-        expect(storageRead<TestType>('G_OK', WebStorageType.LOCAL, isTestType)).toEqual({ value: 100 })
+        expect(storageRead<TestType>('G_OK', WebStorageType.LOCAL, isTestType)).toEqual({
+            value: 100,
+        })
     })
 
     it('校验失败告警并返回 null', () => {

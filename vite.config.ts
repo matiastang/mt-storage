@@ -27,9 +27,7 @@ export default defineConfig({
     ],
     resolve: {
         // 别名
-        alias: [
-            { find: '@', replacement: path.resolve(__dirname, './src') },
-        ],
+        alias: [{ find: '@', replacement: path.resolve(__dirname, './src') }],
     },
     css: {
         modules: {

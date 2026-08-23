@@ -74,15 +74,27 @@ describe('serialize：特殊类型打标签', () => {
     it('嵌套组合结构递归编码', () => {
         const value = { m: new Map([['d', new Date(0)]]), s: new Set([[1, 2]]), u: undefined }
         const encoded = JSON.parse(serialize(value))
-        expect(encoded.m.__matias_value__[0][1]).toEqual({ __matias_tag__: 'Date', __matias_value__: 0 })
+        expect(encoded.m.__matias_value__[0][1]).toEqual({
+            __matias_tag__: 'Date',
+            __matias_value__: 0,
+        })
         expect(encoded.s.__matias_value__[0]).toEqual([1, 2])
         expect(encoded.u).toEqual({ __matias_tag__: 'undefined' })
     })
 
     it('空容器与空参数正则', () => {
-        expect(JSON.parse(serialize(new Map()))).toEqual({ __matias_tag__: 'Map', __matias_value__: [] })
-        expect(JSON.parse(serialize(new Set()))).toEqual({ __matias_tag__: 'Set', __matias_value__: [] })
-        expect(JSON.parse(serialize(/x/))).toEqual({ __matias_tag__: 'RegExp', __matias_value__: { s: 'x', f: '' } })
+        expect(JSON.parse(serialize(new Map()))).toEqual({
+            __matias_tag__: 'Map',
+            __matias_value__: [],
+        })
+        expect(JSON.parse(serialize(new Set()))).toEqual({
+            __matias_tag__: 'Set',
+            __matias_value__: [],
+        })
+        expect(JSON.parse(serialize(/x/))).toEqual({
+            __matias_tag__: 'RegExp',
+            __matias_value__: { s: 'x', f: '' },
+        })
     })
 
     it('对象的 function/symbol 属性按 JSON 语义丢弃；toJSON 语义保留', () => {
@@ -115,10 +127,16 @@ describe('deserialize：标签还原', () => {
         expect(deserialize(serialize(date))).toEqual(date)
         expect(deserialize(serialize(date)) instanceof Date).toBe(true)
 
-        const map = new Map<unknown, unknown>([['a', 1], [2, 'b']])
+        const map = new Map<unknown, unknown>([
+            ['a', 1],
+            [2, 'b'],
+        ])
         const revivedMap = deserialize(serialize(map)) as Map<unknown, unknown>
         expect(revivedMap instanceof Map).toBe(true)
-        expect([...revivedMap.entries()]).toEqual([['a', 1], [2, 'b']])
+        expect([...revivedMap.entries()]).toEqual([
+            ['a', 1],
+            [2, 'b'],
+        ])
 
         const set = new Set([1, 'a', true])
         const revivedSet = deserialize(serialize(set)) as Set<unknown>
@@ -175,7 +193,11 @@ describe('deserialize：标签还原', () => {
 
     it('未知 tag 不还原，当作普通对象', () => {
         const raw = '{"__matias_tag__":"Future","__matias_value__":1,"other":2}'
-        expect(deserialize(raw)).toEqual({ __matias_tag__: 'Future', __matias_value__: 1, other: 2 })
+        expect(deserialize(raw)).toEqual({
+            __matias_tag__: 'Future',
+            __matias_value__: 1,
+            other: 2,
+        })
     })
 
     it('含标签字段但缺 __matias_value__（非无载荷标签）不还原', () => {
@@ -188,7 +210,9 @@ describe('deserialize：标签还原', () => {
         const revived = deserialize(raw) as Record<string, unknown> & { polluted?: string }
         expect(({} as Record<string, unknown>).polluted).toBeUndefined()
         expect(Object.prototype.hasOwnProperty.call(revived, '__proto__')).toBe(true)
-        expect((Object.getOwnPropertyDescriptor(revived, '__proto__') as PropertyDescriptor).value).toEqual({ polluted: 'yes' })
+        expect(
+            (Object.getOwnPropertyDescriptor(revived, '__proto__') as PropertyDescriptor).value
+        ).toEqual({ polluted: 'yes' })
         expect(revived.a).toBe(1)
         expect(({} as Record<string, unknown>).polluted).toBeUndefined()
     })

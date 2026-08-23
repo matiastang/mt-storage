@@ -7,7 +7,12 @@
  * @Description: sessionStorage 封装单元测试（含 undefined 删除语义的 bug 回归）
  */
 import { describe, expect, it, vi } from 'vitest'
-import { sessionStorageWrite, sessionStorageRead, sessionStorageRemove, sessionStorageRemoveAll } from '../sessionStorage'
+import {
+    sessionStorageWrite,
+    sessionStorageRead,
+    sessionStorageRemove,
+    sessionStorageRemoveAll,
+} from '../sessionStorage'
 
 describe('sessionStorageWrite', () => {
     it('写入对象并可读取', () => {

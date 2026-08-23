@@ -114,7 +114,10 @@ describe('storageWrite / storageRead 集成：引用类型往返', () => {
         const warn = vi.spyOn(console, 'warn').mockImplementation(() => {})
         localStorage.setItem('DIRTY', '{invalid json')
         expect(storageRead('DIRTY')).toBeNull()
-        localStorage.setItem('BAD_BIGINT', JSON.stringify({ __matias_tag__: 'BigInt', __matias_value__: 'not-a-number' }))
+        localStorage.setItem(
+            'BAD_BIGINT',
+            JSON.stringify({ __matias_tag__: 'BigInt', __matias_value__: 'not-a-number' })
+        )
         expect(storageRead('BAD_BIGINT')).toBeNull()
         expect(warn).toHaveBeenCalledTimes(2)
         warn.mockRestore()
