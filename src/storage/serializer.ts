@@ -190,10 +190,20 @@ const decode = (value: unknown): unknown => {
     if (tag === 'Set') {
         return new Set((payload as unknown[]).map(decode))
     }
-    // 普通对象：逐属性递归
+    // 普通对象：逐属性递归；__proto__ 用 defineProperty 赋值，避免触发原型 setter（防原型污染）
     const result: Record<string, unknown> = {}
     for (const key of Object.keys(value)) {
-        result[key] = decode((value as Record<string, unknown>)[key])
+        const decoded = decode((value as Record<string, unknown>)[key])
+        if (key === '__proto__') {
+            Object.defineProperty(result, key, {
+                value: decoded,
+                enumerable: true,
+                writable: true,
+                configurable: true,
+            })
+        } else {
+            result[key] = decoded
+        }
     }
     return result
 }

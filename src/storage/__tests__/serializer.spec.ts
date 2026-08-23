@@ -183,6 +183,16 @@ describe('deserialize：标签还原', () => {
         expect(deserialize(raw)).toEqual({ __matias_tag__: 'Future' })
     })
 
+    it('__proto__ 键不污染原型链（按普通属性还原）', () => {
+        const raw = '{"__proto__":{"polluted":"yes"},"a":1}'
+        const revived = deserialize(raw) as Record<string, unknown> & { polluted?: string }
+        expect(({} as Record<string, unknown>).polluted).toBeUndefined()
+        expect(Object.prototype.hasOwnProperty.call(revived, '__proto__')).toBe(true)
+        expect((Object.getOwnPropertyDescriptor(revived, '__proto__') as PropertyDescriptor).value).toEqual({ polluted: 'yes' })
+        expect(revived.a).toBe(1)
+        expect(({} as Record<string, unknown>).polluted).toBeUndefined()
+    })
+
     it('非法 JSON 抛出 SyntaxError（由调用方决定告警策略）', () => {
         expect(() => deserialize('{invalid')).toThrow(SyntaxError)
     })
