@@ -178,6 +178,11 @@ describe('deserialize：标签还原', () => {
         expect(deserialize(raw)).toEqual({ __matias_tag__: 'Future', __matias_value__: 1, other: 2 })
     })
 
+    it('含标签字段但缺 __matias_value__（非无载荷标签）不还原', () => {
+        const raw = '{"__matias_tag__":"Future"}'
+        expect(deserialize(raw)).toEqual({ __matias_tag__: 'Future' })
+    })
+
     it('非法 JSON 抛出 SyntaxError（由调用方决定告警策略）', () => {
         expect(() => deserialize('{invalid')).toThrow(SyntaxError)
     })

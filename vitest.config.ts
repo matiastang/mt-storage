@@ -22,7 +22,7 @@ export default defineConfig({
         coverage: {
             provider: 'v8',
             include: ['src/storage/**/*.ts'],
-            exclude: ['src/storage/**/__tests__/**', 'src/storage/types/**', 'src/storage/tsconfig.json'],
+            exclude: ['src/storage/**/__tests__/**', 'src/storage/types/**', 'src/storage/tsconfig.json', 'src/storage/guard.ts'], // guard.ts 为纯类型模块，无运行时代码
             thresholds: {
                 statements: 95,
                 branches: 95,

@@ -1,5 +1,9 @@
 {
     "compilerOptions": {
+        "target": "es2020",// ES2020：BigInt 支持（v0.3.0 起）所需
+        "moduleResolution": "node",
+        "strict": true,
+        "skipLibCheck": true,
         "noEmit": false,// noEmit,若要导出d.ts文件，必须为false。否则会忽略declaration相关参数
         "declaration": true,// declaration,是否导出d.ts文件，当为true时且noEmit为true时才会进行导出操作
         "declarationDir": "types",// declarationDir，d.ts文件存放的目录路径。当不设置改参数时，将使用outDir的值
@@ -7,7 +11,7 @@
         "rootDir": ".",
     },
     "include": ["**/*"],
-    "exclude": ["buildJs", "types"]
+    "exclude": ["buildJs", "types", "__tests__"]
 }
 /*
 `tsconfig.json`当前目录执行`tsc`或`tsc --outDir js`指定目录

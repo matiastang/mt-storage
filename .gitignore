@@ -3,3 +3,4 @@ dist
 build*
 types
 .DS_Store
+coverage

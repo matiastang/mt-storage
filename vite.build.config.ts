@@ -18,6 +18,8 @@ import { terser } from 'rollup-plugin-minification'
 export default defineConfig({
     // 插件
     plugins: [terser()],
+    // 库构建不拷贝 public 目录（demo 资源）
+    publicDir: false,
     // 库模式
     build: {
         lib: {

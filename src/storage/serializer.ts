@@ -42,9 +42,7 @@ const tagWithValue = (tag: TagName, encodedValue: unknown): Record<string, unkno
  * 判断解析结果是否为已知标签对象；未知 tag 视为普通数据（防用户字段碰撞）
  */
 const asKnownTag = (value: object): TagName | null => {
-    if (Array.isArray(value)) {
-        return null
-    }
+    // 仅接收非数组对象（decode 已先行处理数组分支）
     const record = value as Record<string, unknown>
     if (typeof record[TAG_KEY] !== 'string') {
         return null

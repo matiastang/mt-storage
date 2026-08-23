@@ -54,6 +54,38 @@ describe('sessionStorageRead', () => {
     })
 })
 
+describe('sessionStorage 序列化错误分支', () => {
+    it('底层 setItem 抛通用错误（配额满等）返回 false 并告警', () => {
+        const warn = vi.spyOn(console, 'warn').mockImplementation(() => {})
+        const spy = vi.spyOn(Storage.prototype, 'setItem').mockImplementation(() => {
+            throw new Error('QuotaExceededError')
+        })
+        expect(sessionStorageWrite('S_QUOTA', { a: 1 })).toBe(false)
+        spy.mockRestore()
+        warn.mockRestore()
+    })
+
+    it('循环引用经 sessionStorageWrite 拒绝并告警（StorageSerializeError 路径）', () => {
+        const warn = vi.spyOn(console, 'warn').mockImplementation(() => {})
+        const circular: Record<string, unknown> = {}
+        circular.self = circular
+        expect(sessionStorageWrite('S_CIRCULAR', circular)).toBe(false)
+        expect(warn).toHaveBeenCalledTimes(1)
+        warn.mockRestore()
+    })
+
+    it('非法 BigInt 标签载荷经 sessionStorageRead 返回 null 并告警', () => {
+        sessionStorage.setItem(
+            'S_BAD_BIGINT',
+            JSON.stringify({ __matias_tag__: 'BigInt', __matias_value__: 'xyz' })
+        )
+        const warn = vi.spyOn(console, 'warn').mockImplementation(() => {})
+        expect(sessionStorageRead('S_BAD_BIGINT')).toBeNull()
+        expect(warn).toHaveBeenCalledTimes(1)
+        warn.mockRestore()
+    })
+})
+
 describe('sessionStorageRemove / removeAll', () => {
     it('删除指定 key', () => {
         sessionStorageWrite('A', 1)
