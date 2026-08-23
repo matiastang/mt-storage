@@ -1,6 +1,6 @@
 {
   "name": "matias-storage",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "web storage的简单封装",
   "main": "./dist/index.umd.js",
   "files": [
