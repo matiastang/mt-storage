@@ -70,8 +70,9 @@ console.log('typed key:', user, user?.name)
 const isDemoUser = (v: unknown): v is DemoUser =>
     !!v && typeof v === 'object' && typeof (v as DemoUser).name === 'string'
 console.log('guard pass:', storageRead(userKey, isDemoUser))
-storageWrite('DEMO_BAD', { name: 123 } as unknown as DemoUser)
+storageWrite(userKey, { name: 123 } as unknown as DemoUser)
 console.log('guard fail(should be null + warn):', storageRead(userKey, isDemoUser))
+storageWrite(userKey, { name: 'matias', age: 18 })
 
 const changeValue = () => {
     storageWrite(objectKey, {
