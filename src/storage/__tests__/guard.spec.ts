@@ -35,7 +35,7 @@ describe('storageRead guard 校验（字符串 key）', () => {
 
     it('key 不存在返回 null 且不告警、不调用 guard', () => {
         const warn = vi.spyOn(console, 'warn').mockImplementation(() => {})
-        const guard = vi.fn(isTestType)
+        const guard = vi.fn(isTestType) as unknown as typeof isTestType
         expect(storageRead<TestType>('G_MISSING', WebStorageType.LOCAL, guard)).toBeNull()
         expect(warn).not.toHaveBeenCalled()
         expect(guard).not.toHaveBeenCalled()
