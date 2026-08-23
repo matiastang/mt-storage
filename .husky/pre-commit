@@ -1,0 +1,3 @@
+#!/bin/sh
+# 提交前快速校验：类型 + 测试
+pnpm type-check && pnpm test
