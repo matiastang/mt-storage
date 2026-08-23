@@ -81,7 +81,9 @@ describe('storageWrite / storageRead 集成：引用类型往返', () => {
 
     it('顶层 function / symbol 拒绝写入并告警', () => {
         const warn = vi.spyOn(console, 'warn').mockImplementation(() => {})
+        // function 在 TS 的 object 类型域内（无法编译期排除），运行时拒绝
         expect(storageWrite('FN', () => 1)).toBe(false)
+        // @ts-expect-error symbol 不在可写值域内（编译期即拒绝）
         expect(storageWrite('SYM', Symbol('x'))).toBe(false)
         expect(localStorage.getItem('FN')).toBeNull()
         expect(warn).toHaveBeenCalledTimes(2)

@@ -69,11 +69,10 @@ const encode = (value: unknown, ancestors: Set<object>): unknown => {
     if (value === null) {
         return null
     }
-    const type = typeof value
-    if (type === 'string' || type === 'boolean') {
+    if (typeof value === 'string' || typeof value === 'boolean') {
         return value
     }
-    if (type === 'number') {
+    if (typeof value === 'number') {
         if (Number.isNaN(value)) {
             return tagWithoutValue('NaN')
         }
@@ -85,14 +84,14 @@ const encode = (value: unknown, ancestors: Set<object>): unknown => {
         }
         return value
     }
-    if (type === 'bigint') {
+    if (typeof value === 'bigint') {
         return tagWithValue('BigInt', value.toString())
     }
-    if (type === 'undefined') {
+    if (typeof value === 'undefined') {
         return tagWithoutValue('undefined')
     }
-    if (type === 'function' || type === 'symbol') {
-        throw new StorageSerializeError(`unsupported top-level value type: ${type}`)
+    if (typeof value === 'function' || typeof value === 'symbol') {
+        throw new StorageSerializeError(`unsupported top-level value type: ${typeof value}`)
     }
     // object 分支
     if (value instanceof Date) {

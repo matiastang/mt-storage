@@ -7,6 +7,7 @@
  * @Description: sessionStorage简单封装
  */
 import { StorageSerializeError } from './errors'
+import { resolveKeyString, StorageKey } from './key'
 import { deserialize, serialize } from './serializer'
 
 /**
@@ -16,19 +17,20 @@ import { deserialize, serialize } from './serializer'
  * @returns 成功返回true；undefined删除返回true；不支持类型（循环引用/顶层函数等）或写入失败返回false并告警。
  */
 export const sessionStorageWrite = (
-    key: string,
+    key: string | StorageKey<unknown>,
     value: object | string | boolean | number | bigint | null | undefined
 ) => {
+    const keyString = resolveKeyString(key)
     if (typeof value === 'undefined') {
-        sessionStorage.removeItem(key)
+        sessionStorage.removeItem(keyString)
         return true
     }
     try {
-        sessionStorage.setItem(key, serialize(value))
+        sessionStorage.setItem(keyString, serialize(value))
         return true
     } catch (err) {
         console.warn(
-            `mt-storage sessionStorage write ${key} value=${String(value)}:`,
+            `mt-storage sessionStorage write ${keyString} value=${String(value)}:`,
             err instanceof StorageSerializeError ? err.message : err
         )
         return false
@@ -40,8 +42,8 @@ export const sessionStorageWrite = (
  * @param key 存储key
  * @returns 反序列化后的值；key不存在、存储null或解析失败返回null（解析失败会告警）
  */
-export const sessionStorageRead = <T = any>(key: string): T | null => {
-    const value = sessionStorage.getItem(key)
+export const sessionStorageRead = <T = any>(key: string | StorageKey<unknown>): T | null => {
+    const value = sessionStorage.getItem(resolveKeyString(key))
     if (value === null) {
         return null
     }
@@ -49,7 +51,7 @@ export const sessionStorageRead = <T = any>(key: string): T | null => {
         return <T>deserialize(value)
     } catch (err) {
         console.warn(
-            `mt-storage sessionStorage read ${key}:`,
+            `mt-storage sessionStorage read ${resolveKeyString(key)}:`,
             err instanceof StorageSerializeError ? err.message : err
         )
     }
@@ -60,8 +62,8 @@ export const sessionStorageRead = <T = any>(key: string): T | null => {
  * 清除sessionStorage数据
  * @param key 存储key
  */
-export const sessionStorageRemove = (key: string) => {
-    sessionStorage.removeItem(key)
+export const sessionStorageRemove = (key: string | StorageKey<unknown>) => {
+    sessionStorage.removeItem(resolveKeyString(key))
 }
 
 /**
