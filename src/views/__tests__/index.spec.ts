@@ -8,6 +8,7 @@
  */
 import { mount } from '@vue/test-utils'
 import { describe, expect, it } from 'vitest'
+import { storageRead } from '@/storage'
 import Index from '../index.vue'
 
 describe('demo 页组件', () => {
@@ -19,12 +20,23 @@ describe('demo 页组件', () => {
         expect(value).not.toBeNull()
     })
 
-    it('点击"改变所有缓存值"后数据更新', async () => {
-        const before = localStorage.getItem('KEY_NUMBER')
+    it('点击"改变基础类型缓存值"后数据更新', async () => {
         const wrapper = mount(Index)
-        await wrapper.find('.page').trigger('click')
+        const before = localStorage.getItem('KEY_NUMBER')
+        await wrapper.findAll('.block')[0].trigger('click')
         const after = localStorage.getItem('KEY_NUMBER')
         expect(after).not.toBeNull()
         expect(after).not.toBe(before)
+    })
+
+    it('demo 演示新特性：typed key 与引用类型写入读取', async () => {
+        const wrapper = mount(Index)
+        // typed key 数据已写入 localStorage
+        expect(localStorage.getItem('DEMO_USER')).toContain('matias')
+        // 引用类型：点击写入后可读回
+        await wrapper.findAll('.block')[1].trigger('click')
+        const raw = localStorage.getItem('DEMO_REFERENCE')
+        expect(raw).toContain('__matias_tag__')
+        expect(storageRead('DEMO_REFERENCE')).not.toBeNull()
     })
 })
