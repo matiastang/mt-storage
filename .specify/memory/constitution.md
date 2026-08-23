@@ -1,50 +1,42 @@
-# [PROJECT_NAME] Constitution
-<!-- Example: Spec Constitution, TaskFlow Constitution, etc. -->
+# matias-storage Constitution
 
 ## Core Principles
 
-### [PRINCIPLE_1_NAME]
-<!-- Example: I. Library-First -->
-[PRINCIPLE_1_DESCRIPTION]
-<!-- Example: Every feature starts as a standalone library; Libraries must be self-contained, independently testable, documented; Clear purpose required - no organizational-only libraries -->
+### I. 零运行时依赖（Library-First, Zero-Dependency）
+本库定位是 Web Storage 的"简单封装"，发布产物 MUST NOT 引入任何运行时依赖（dependencies 为空）。运行时类型校验通过使用者传入 type-guard 函数实现，不绑定 zod/valibot 等校验库。
 
-### [PRINCIPLE_2_NAME]
-<!-- Example: II. CLI Interface -->
-[PRINCIPLE_2_DESCRIPTION]
-<!-- Example: Every library exposes functionality via CLI; Text in/out protocol: stdin/args → stdout, errors → stderr; Support JSON + human-readable formats -->
+### II. 测试先行（Test-First，不可协商）
+先写测试、后写实现；红-绿-重构循环。每个功能点提交前测试必须全绿。测试覆盖目标：语句与分支覆盖率 ≥95%（Vitest + coverage-v8）。纯前端库无后端，pytest 要求豁免；e2e（Playwright）暂缓，待 demo 页有独立价值时再评估。
 
-### [PRINCIPLE_3_NAME]
-<!-- Example: III. Test-First (NON-NEGOTIABLE) -->
-[PRINCIPLE_3_DESCRIPTION]
-<!-- Example: TDD mandatory: Tests written → User approved → Tests fail → Then implement; Red-Green-Refactor cycle strictly enforced -->
+### III. 类型安全（Type Safety）
+源码全部 TypeScript（`strict: true`）。公共 API 的输入输出类型必须完备；类型自动推断通过 typed key（`defineStorageKey<T>`）实现，不使用全局声明合并注册表。`tsc --noEmit` 必须零错误。
 
-### [PRINCIPLE_4_NAME]
-<!-- Example: IV. Integration Testing -->
-[PRINCIPLE_4_DESCRIPTION]
-<!-- Example: Focus areas requiring integration tests: New library contract tests, Contract changes, Inter-service communication, Shared schemas -->
+### IV. 向后兼容（Backward Compatibility）
+不破坏 v0.2.0 的公共 API 与已存储数据：字符串 key 的旧用法继续可用；v0.2.0 写入的裸 JSON 数据在新版本必须原样可读。类型标签只对特殊类型（Date/Map/Set/RegExp/BigInt/NaN/Infinity/嵌套 undefined）生效，普通数据保持裸 JSON 格式。保留字段名前缀 `__matias_` 视为库保留字。
 
-### [PRINCIPLE_5_NAME]
-<!-- Example: V. Observability, VI. Versioning & Breaking Changes, VII. Simplicity -->
-[PRINCIPLE_5_DESCRIPTION]
-<!-- Example: Text I/O ensures debuggability; Structured logging required; Or: MAJOR.MINOR.BUILD format; Or: Start simple, YAGNI principles -->
+### V. 一个功能点一个提交（One Feature, One Commit）
+每个功能点（特性/修复/基建/文档）独立 commit，不混合。commit message 遵循 Conventional Commits（commitlint + husky 强制）。
 
-## [SECTION_2_NAME]
-<!-- Example: Additional Constraints, Security Requirements, Performance Standards, etc. -->
+### VI. 循环 Code Review（Loop Review Until Clean）
+每个版本需求完成后，执行循环 code review，修复中等严重及以上问题，直到不存在中等严重问题为止，方可发版。
 
-[SECTION_2_CONTENT]
-<!-- Example: Technology stack requirements, compliance standards, deployment policies, etc. -->
+## 版本与发布规范
 
-## [SECTION_3_NAME]
-<!-- Example: Development Workflow, Review Process, Quality Gates, etc. -->
+- 版本号格式 `MAJOR.MINOR.PATCH`：package.json、需求文档、git tag 三处保持一致，tag 统一为 `v` + 版本号（如 `0.3.0` / tag `v0.3.0`）。
+- 每个版本必须有 CHANGELOG.md 条目与版本更新说明。
+- README 默认英文（README.md），中文版 README.zh-CN.md，两者互链。
 
-[SECTION_3_CONTENT]
-<!-- Example: Code review requirements, testing gates, deployment approval process, etc. -->
+## 技术栈约束
+
+- 前端包管理：pnpm；Python 工具链：uv。
+- 构建：Vite 5 库模式（ES/CJS/UMD/IIFE）+ tsc 生成类型声明。
+- 测试：Vitest + jsdom（localStorage/sessionStorage 环境）+ @vue/test-utils（demo 组件用例）。
+- CI：GitHub Actions，main 分支 push 与 PR 触发校验（type-check + test + build），暂不做自动部署。
 
 ## Governance
-<!-- Example: Constitution supersedes all other practices; Amendments require documentation, approval, migration plan -->
 
-[GOVERNANCE_RULES]
-<!-- Example: All PRs/reviews must verify compliance; Complexity must be justified; Use [GUIDANCE_FILE] for runtime development guidance -->
+- 本宪法效力高于其他工程实践；修改需记录变更说明与迁移方案。
+- 所有提交与 review 必须对照本宪法检查合规性。
+- 需求来源与版本决策记录于 docs/requirements.md，用户确认的补充信息追加到对应版本小节末尾。
 
-**Version**: [CONSTITUTION_VERSION] | **Ratified**: [RATIFICATION_DATE] | **Last Amended**: [LAST_AMENDED_DATE]
-<!-- Example: Version: 2.1.1 | Ratified: 2025-06-13 | Last Amended: 2025-07-16 -->
+**Version**: 1.0.0 | **Ratified**: 2026-08-23 | **Last Amended**: 2026-08-23
